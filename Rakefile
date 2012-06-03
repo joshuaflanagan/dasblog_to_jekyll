@@ -1,10 +1,11 @@
 @root_dir = File.expand_path(File.join(File.dirname(__FILE__)))
 $: << File.join(@root_dir, "lib")
 
-require 'toto'
+# require 'toto'
 require 'dasblog'
 require 'comments'
-require 'migrate_to_toto'
+require 'migrate_to_jekyll'
+require 'yaml'
 
 task :default => :migrate_dasblog
 
@@ -23,14 +24,15 @@ task :migrate_dasblog, :config_file do |t, args|
   validate_config config
   
   puts "migration starts"
-  dasblog = Dasblog.new(Dir.pwd + config["dasblog_dir"], config["replacements"])
+  dasblog = Dasblog.new(Dir.pwd + config["dasblog_dir"], config["replacements"]||{})
   entries = dasblog.entries
   entries.each do |entry|
     entry.Author = config["author"]
+    puts "Found private post: #{entry.Title} on #{entry.Date}" unless entry.Published
   end
   puts "Articles migrated: #{dasblog.entries.count}" 
-  migrate_to_toto = Migrate_to_toto.new Dir.pwd + config["toto_dir"]
-  migrate_to_toto.migrate entries
+  migrator = MigrateToJekyll.new Dir.pwd + config["toto_dir"]
+  migrator.migrate entries
 end
 
 

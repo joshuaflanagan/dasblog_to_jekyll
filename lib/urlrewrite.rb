@@ -1,6 +1,11 @@
-require 'toto'
+# require 'toto'
 require 'prettyprinter'
 
+class String
+  def slugize
+    "SLUGGED#{self}"
+  end
+end
 class UrlRewrite
   include PrettyPrinter
   

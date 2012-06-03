@@ -10,6 +10,7 @@ class Entry
   attr_accessor :Content
   attr_accessor :Tags
   attr_accessor :Author
+  attr_accessor :Published
 
   def initialize(args = nil)
     self.Tags = []
@@ -24,6 +25,16 @@ class Entry
     if self.Date == nil then raise "Date is missing" end
 
     filename = "#{pretty_print_date(self.Date)}-#{generate_valid_filename(self.Title)}.txt"
+    filename.downcase!
+    
+    filename
+  end
+
+  def jekyll_filename
+    if self.Title == nil then raise "Title is missing" end
+    if self.Date == nil then raise "Date is missing" end
+
+    filename = "#{pretty_print_date(self.Date)}-#{generate_valid_filename(self.Title)}.html"
     filename.downcase!
     
     filename
@@ -62,6 +73,24 @@ class Entry
     tags_str = ""
     self.Tags.each do |tag| tags_str << tag << ";" end
     "#{title}\n#{author}\n#{date}\n#{id}\ntags: #{tags_str.gsub /;$/, ""}\n\n#{self.Content}"
+  end
+  
+  def to_jekyll
+    headers = {
+      'title' => remove_html_encoding(self.Title.strip),
+      'permalink' => "#{generate_dasblog_friendly_link}.html",
+      'layout' => 'migrated',
+      'date' => self.Date.to_date,
+      'id' => self.Id,
+      'published_at' => self.Date.to_time,
+    }
+    headers['tags'] = self.Tags.join(';') if self.Tags.any?
+    headers['published'] = false unless self.Published
+
+    "#{headers.to_yaml}
+---
+
+#{self.Content}"
   end
   
   def remove_html_encoding(content)

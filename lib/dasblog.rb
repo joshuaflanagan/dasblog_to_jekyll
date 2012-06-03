@@ -32,7 +32,7 @@ class Dasblog
     entry.Title = post_xml.elements["Title"].text
     entry.Content = post_xml.elements["Content"].text
     
-    if(post_xml.elements["Categories"].text != nil)
+    if(post_xml.elements["Categories"] && post_xml.elements["Categories"].text != nil)
       entry.Tags = post_xml.elements["Categories"].text.split(";")
     end
     entry.Date = DateTime.parse post_xml.elements["Created"].text

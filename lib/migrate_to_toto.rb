@@ -16,7 +16,8 @@ class Migrate_to_toto
       file.puts entry.to_yaml
     end
     
-    url_rewrite = UrlRewrite.new
+    url_rewrite = UrlRewrite.new ->entry{ entry.Date.strftime("%Y/%m/%d/#{entry.Title.slugize}/")}
+    #TODO: move the redirect code out, since it is common to both migrators
     file = File.new("#{@toto_dir}/redirect.rb", "w+")  
     urls = url_rewrite.all_links entries
     

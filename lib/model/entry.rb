@@ -74,11 +74,15 @@ class Entry
     self.Tags.each do |tag| tags_str << tag << ";" end
     "#{title}\n#{author}\n#{date}\n#{id}\ntags: #{tags_str.gsub /;$/, ""}\n\n#{self.Content}"
   end
+
+  def jekyll_permalink
+    "#{generate_dasblog_friendly_link}.html"
+  end
   
   def to_jekyll
     headers = {
       'title' => remove_html_encoding(self.Title.strip),
-      'permalink' => "#{generate_dasblog_friendly_link}.html",
+      'permalink' => jekyll_permalink,
       'layout' => 'migrated',
       'date' => self.Date.to_date,
       'id' => self.Id,

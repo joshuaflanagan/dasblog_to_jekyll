@@ -31,7 +31,7 @@ task :migrate_dasblog, :config_file do |t, args|
     puts "Found private post: #{entry.Title} on #{entry.Date}" unless entry.Published
   end
   puts "Articles migrated: #{dasblog.entries.count}" 
-  migrator = MigrateToJekyll.new Dir.pwd + config["toto_dir"]
+  migrator = MigrateToJekyll.new Dir.pwd + config["toto_dir"], config["old_base"], config["new_base"]
   migrator.migrate entries
 end
 

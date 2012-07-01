@@ -10,20 +10,22 @@ class Dasblog
   end
   
   def entries
-    entries = []
-    
-    files = Dir.entries(@path)
-    files.each do |f|
-      if f.include? ".dayentry.xml"
-        File.open @path + "/" + f do |stream|
-          xml = REXML::Document.new(stream)
-          xml.root.elements.each("Entries/Entry") do |post_xml|
-            entries.push parse_entry(post_xml)
-          end
-        end
-      end
-    end
-    entries
+    @entries ||=
+     begin
+       entries = []
+       files = Dir.entries(@path)
+       files.each do |f|
+         if f.include? ".dayentry.xml"
+           File.open @path + "/" + f do |stream|
+             xml = REXML::Document.new(stream)
+             xml.root.elements.each("Entries/Entry") do |post_xml|
+               entries.push parse_entry(post_xml)
+             end
+           end
+         end
+       end
+       entries
+     end
   end
   
   def parse_entry(post_xml)

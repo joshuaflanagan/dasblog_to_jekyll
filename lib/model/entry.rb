@@ -11,6 +11,7 @@ class Entry
   attr_accessor :Tags
   attr_accessor :Author
   attr_accessor :Published
+  attr_accessor :comments
 
   def initialize(args = nil)
     self.Tags = []
@@ -90,6 +91,7 @@ class Entry
     }
     headers['tags'] = self.Tags.join(';') if self.Tags.any?
     headers['published'] = false unless self.Published
+    headers['comments'] = comments
 
     "#{headers.to_yaml}
 ---

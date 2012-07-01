@@ -56,17 +56,27 @@ class Dasblog
       xml = REXML::Document.new(stream)
       xml.root.elements.each("Comments/Comment") do |comment_xml|
         entry = comment_xml.elements["TargetEntryId"].text.downcase
-        if comment_xml.elements["IsPublic"].text == "true" && comment_xml.elements["SpamState"].text == "NotSpam"
+        if should_publish_comment?(comment_xml)
           comment = {}
-          comment["content"] = comment_xml.elements["Content"].text
-          comment["author"] = comment_xml.elements["Author"].text
-          comment["email"] = comment_xml.elements["AuthorEmail"].text
-          comment["url"] = comment_xml.elements["AuthorHomepage"].text
-          comment["created"] = DateTime.parse(comment_xml.elements["Created"].text).to_time
+          comment["created"] = DateTime.parse(xmltext(comment_xml,"Created")).to_time
+          comment["author"] = xmltext(comment_xml,"Author")
+          comment["email"] = xmltext(comment_xml,"AuthorEmail")
+          comment["url"] = xmltext(comment_xml,"AuthorHomepage")
+          comment["content"] = xmltext(comment_xml,"Content")
           day_comments[entry] << comment
         end
       end
     end
     day_comments
+  end
+
+  def xmltext(element, key)
+    node = element.elements[key]
+    node.text if node
+  end
+
+  def should_publish_comment?(comment_xml)
+    return false unless xmltext(comment_xml,"IsPublic") == "true"
+    ["NotSpam", "NotChecked"].include?(xmltext(comment_xml,"SpamState"))
   end
 end

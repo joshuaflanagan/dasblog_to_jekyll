@@ -85,7 +85,7 @@ class Entry
       'permalink' => jekyll_permalink,
       'layout' => 'migrated',
       'date' => self.Date.to_date,
-      'id' => self.Id,
+      'dasblog_id' => self.Id,
       'published_at' => self.Date.to_time,
     }
     headers['tags'] = self.Tags.join(';') if self.Tags.any?

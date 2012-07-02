@@ -59,9 +59,9 @@ class Dasblog
         if should_publish_comment?(comment_xml)
           comment = {}
           comment["created"] = DateTime.parse(xmltext(comment_xml,"Created")).to_time
-          comment["author"] = xmltext(comment_xml,"Author")
-          comment["email"] = xmltext(comment_xml,"AuthorEmail")
-          comment["url"] = xmltext(comment_xml,"AuthorHomepage")
+          xmltext(comment_xml,"Author").tap{|val| comment["author"] = val if val}
+          xmltext(comment_xml,"AuthorEmail").tap{|val| comment["email"] = val if val}
+          xmltext(comment_xml,"AuthorHomepage").tap{|val| comment["url"] = val if val}
           comment["content"] = xmltext(comment_xml,"Content")
           day_comments[entry] << comment
         end
@@ -72,7 +72,11 @@ class Dasblog
 
   def xmltext(element, key)
     node = element.elements[key]
-    node.text if node
+    return nil unless node
+    return nil unless node.text
+    inner = node.text.strip
+    return nil if inner.empty?
+    inner
   end
 
   def should_publish_comment?(comment_xml)

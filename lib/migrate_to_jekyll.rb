@@ -27,5 +27,12 @@ class MigrateToJekyll
     urls.each do |old_url, new_url|
       file.puts "r301 '#{@old_base}#{old_url}', '#{@new_base}#{new_url}'"
     end    
+
+    guid_map = entries.each_with_object({}) do |entry, map|
+      map[entry.Id.downcase] = entry.generate_dasblog_friendly_link
+    end
+    File.open( "#{@posts_path}/guid_to_title_map.yaml", 'w' ) do |out|
+      YAML.dump guid_map, out
+    end
   end
 end
